@@ -10,7 +10,7 @@ app.use(responseTime());
 const client = redis.createClient({
   host: "127.0.0.1",
   port: 6380,
-  password: "euOX7EwVmmxKdayKBTsy354p",
+  password: "euOX7EwVmmxKdayKBTsy354p"
 });
 
 const GET_ASYNC = promisify(client.get).bind(client);
