@@ -3,8 +3,9 @@ const redis = require("redis");
 
 const app = express();
 const client = redis.createClient({
-  host: "redis-server",
+  host: "127.0.0.1",
   port: 6379,
+  password: "euOX7EwVmmxKdayKBTsy354p",
 });
 
 //Set initial visits
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 });
 
 //specifying the listening port
-app.listen(8081, () => {
+app.listen(8081, async() => {
+    await client.connect();
   console.log("Listening on port 8081");
 });
