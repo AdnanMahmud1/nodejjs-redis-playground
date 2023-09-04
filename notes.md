@@ -1,5 +1,5 @@
-follow practice 3
+follow practice
 
 run command:
 
-docker run --rm --name test-redis redis:6.2-alpine redis-server --loglevel warning
+docker run -d -p 6380:6379 --name redis-cache redis

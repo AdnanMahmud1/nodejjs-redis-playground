@@ -5,11 +5,12 @@ const responseTime = require("response-time");
 const { promisify } = require("util");
 
 const app = express();
-
+const secondsInaDay= 60*60*24;
 app.use(responseTime());
 const client = redis.createClient({
   host: "127.0.0.1",
   port: 6380,
+  password: "euOX7EwVmmxKdayKBTsy354p",
 });
 
 const GET_ASYNC = promisify(client.get).bind(client);
@@ -29,7 +30,7 @@ app.get("/rockets", async (req, res, next) => {
       "rockets",
       JSON.stringify(response.data),
       "EX",
-      60 * 60 * 24
+      secondsInaDay*1
     );
     console.log("new data cached", saveResult);
     res.send(response.data);
@@ -38,31 +39,30 @@ app.get("/rockets", async (req, res, next) => {
   }
 });
 
-app.get('/rockets/:rocket_id', async(req, res, next) => {
-    const { rocket_id } = req.params;
-     try {
-       const reply = await GET_ASYNC(rocket_id);
-       if (reply) {
-         console.log("using cached data");
-         res.send(JSON.parse(reply));
-         return;
-       }
+app.get("/rockets/:rocket_id", async (req, res, next) => {
+  const { rocket_id } = req.params;
+  try {
+    const reply = await GET_ASYNC(rocket_id);
+    if (reply) {
+      console.log("using cached data");
+      res.send(JSON.parse(reply));
+      return;
+    }
 
-       const response = await axios.get(
-         `https://api.spacexdata.com/v3/rockets/${rocket_id}`
-       );
-       const saveResult = await SET_ASYNC(
-         rocket_id,
-         JSON.stringify(response.data),
-         "EX",
-         5
-       );
-       console.log("new data cached", saveResult);
-       res.send(response.data);
-     } catch (error) {
-       res.send(error.message);
-     }
-})
-
+    const response = await axios.get(
+      `https://api.spacexdata.com/v3/rockets/${rocket_id}`
+    );
+    const saveResult = await SET_ASYNC(
+      rocket_id,
+      JSON.stringify(response.data),
+      "EX",
+      secondsInaDay*1
+    );
+    console.log("new data cached", saveResult);
+    res.send(response.data);
+  } catch (error) {
+    res.send(error.message);
+  }
+});
 
 app.listen(3000, () => console.log("rocket port 3000"));
