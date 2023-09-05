@@ -16,6 +16,7 @@ const client = redis.createClient({
 const GET_ASYNC = promisify(client.get).bind(client);
 const SET_ASYNC = promisify(client.set).bind(client);
 
+
 app.get("/rockets", async (req, res, next) => {
   try {
     const reply = await GET_ASYNC("rockets");
@@ -30,7 +31,7 @@ app.get("/rockets", async (req, res, next) => {
       "rockets",
       JSON.stringify(response.data),
       "EX",
-      secondsInaDay*1
+      3
     );
     console.log("new data cached", saveResult);
     res.send(response.data);
